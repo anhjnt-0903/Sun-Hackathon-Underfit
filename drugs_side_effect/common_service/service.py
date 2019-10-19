@@ -184,7 +184,7 @@ def get_text_service(image):
     return sim_pred
 
 
-def drug_elements(drug_name, path_file):
+def drug_elements(drug_name, path_file_full = PATH_FILE_FULL):
     drug_datas = pd.read_csv(path_file)
     filter_drugs = drug_datas[drug_datas["drug_name"].isin([drug_name])]
     drug_elements_array = filter_drugs["drug_elements"].str.lower().values
@@ -192,7 +192,7 @@ def drug_elements(drug_name, path_file):
     return drug_elements_array
 
 
-def find_id_drugs_by_element(drug_element, path_file):
+def find_id_drugs_by_element(drug_element, path_file = PATH_FILE_ELEMENT):
     element_datas = pd.read_csv(path_file)
     filter_elements = element_datas[element_datas["drug_name"].str.contains(drug_element)]
     drugs_id_array = filter_elements["drug_id"].values
@@ -200,7 +200,7 @@ def find_id_drugs_by_element(drug_element, path_file):
     return drugs_id_array
 
 
-def get_side_effect(drug_name, path_file):
+def get_side_effect(drug_name, path_file = PATH_FILE_FULL):
     drug_datas = pd.read_csv(path_file)
     filter_elements = drug_datas[drug_datas["drug_name"].isin([drug_name])]
     side_effect_array = filter_elements["side_effect"].values
@@ -221,4 +221,5 @@ def drug_interactions(drugs_id_array):
         interact_info['apply'] = div.find('h3').findNext('p').text.split('Applies to:')[-1]
         interact_info['content'] = div.find('div', 'interactions-reference-header').findNext('p').findNext('p').text.replace('  ', ' ')
         res_data.append(interact_info)
+    
     return res_data
