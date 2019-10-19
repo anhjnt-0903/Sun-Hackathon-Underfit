@@ -185,7 +185,7 @@ def get_text_service(image):
 def drug_elements(drug_name, path_file):
     drug_datas = pd.read_csv(path_file)
     filter_drugs = drug_datas[drug_datas["drug_name"].isin([drug_name])]
-    drug_elements_array = filter_drugs["drug_elements"].str.lower()
+    drug_elements_array = filter_drugs["drug_elements"].str.lower().values
 
     return drug_elements_array
 
@@ -193,14 +193,14 @@ def drug_elements(drug_name, path_file):
 def find_id_drugs_by_element(drug_element, path_file):
     element_datas = pd.read_csv(path_file)
     filter_elements = element_datas[element_datas["drug_name"].str.contains(drug_element)]
-    elements_id_array = filter_elements["drug_id"]
+    elements_id_array = filter_elements["drug_id"].values
 
     return elements_id_array
 
 
 def get_side_effect(drug_name, path_file):
     drug_datas = pd.read_csv(path_file)
-    filter_elements = element_datas[element_datas["drug_name"].str.contains(drug_name)]
-    side_effect_array = filter_elements["side_effect"]
+    filter_elements = drug_datas[drug_datas["drug_name"].isin([drug_name])]
+    side_effect_array = filter_elements["side_effect"].values
 
     return side_effect_array
