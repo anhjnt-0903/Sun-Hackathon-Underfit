@@ -15,6 +15,7 @@ import cv2
 from skimage import io
 import numpy as np
 from shapely.geometry import Polygon
+import pandas as pd
 
 from craft_text_detection import craft_utils
 from craft_text_detection import imgproc
@@ -179,3 +180,27 @@ def get_text_service(image):
     sim_pred = converter.decode(preds.data, preds_size.data, raw=False)
     
     return sim_pred
+
+
+def drug_elements(drug_name, path_file):
+    drug_datas = pd.read_csv(path_file)
+    filter_drugs = drug_datas[drug_datas["drug_name"].isin([drug_name])]
+    drug_elements_array = filter_drugs["drug_elements"].str.lower()
+
+    return drug_elements_array
+
+
+def find_id_drugs_by_element(drug_element, path_file):
+    element_datas = pd.read_csv(path_file)
+    filter_elements = element_datas[element_datas["drug_name"].str.contains(drug_element)]
+    elements_id_array = filter_elements["drug_id"]
+
+    return elements_id_array
+
+
+def get_side_effect(drug_name, path_file):
+    drug_datas = pd.read_csv(path_file)
+    filter_elements = element_datas[element_datas["drug_name"].str.contains(drug_name)]
+    side_effect_array = filter_elements["side_effect"]
+
+    return side_effect_array
