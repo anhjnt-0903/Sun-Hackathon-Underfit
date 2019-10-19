@@ -16,6 +16,8 @@ from skimage import io
 import numpy as np
 from shapely.geometry import Polygon
 import pandas as pd
+from bs4 import BeautifulSoup
+import requests
 
 from craft_text_detection import craft_utils
 from craft_text_detection import imgproc
@@ -193,9 +195,9 @@ def drug_elements(drug_name, path_file):
 def find_id_drugs_by_element(drug_element, path_file):
     element_datas = pd.read_csv(path_file)
     filter_elements = element_datas[element_datas["drug_name"].str.contains(drug_element)]
-    elements_id_array = filter_elements["drug_id"].values
+    drugs_id_array = filter_elements["drug_id"].values
 
-    return elements_id_array
+    return drugs_id_array
 
 
 def get_side_effect(drug_name, path_file):
@@ -204,3 +206,19 @@ def get_side_effect(drug_name, path_file):
     side_effect_array = filter_elements["side_effect"].values
 
     return side_effect_array
+
+
+def drug_interactions(drugs_id_array):
+    inter_url = 'https://www.drugs.com/interactions-check.php?drug_list={}'.format(drugs_id_array)
+    inter_r = requests.get(inter_url)
+    inter_soup = BeautifulSoup(inter_r.text, 'html.parser')
+    inter_between = inter_soup.find_all('div', 'interactions-reference')
+    res_data = []
+    for div in inter_between:
+        interact_info = {}
+        interact_info['level'] = div.find('span', 'ddc-status-label').text
+        interact_info['title'] = div.find('h3').text.replace('  ', ' vs ')
+        interact_info['apply'] = div.find('h3').findNext('p').text.split('Applies to:')[-1]
+        interact_info['content'] = div.find('div', 'interactions-reference-header').findNext('p').findNext('p').text.replace('  ', ' ')
+        res_data.append(interact_info)
+    return res_data
